@@ -2,8 +2,7 @@
 
 ## 1. What is a Lambda Expression?
 
-A **lambda expression** is a short, inline way to write a function.  
-It has **no name** and can be assigned to a variable.
+A lambda expression is a **short, inline way** to write an **implementation** of a **functional interface’s single abstract method**.
 
 **Basic form:**
 
@@ -15,7 +14,7 @@ It has **no name** and can be assigned to a variable.
 
 ## 2. Important Rule
 
-A lambda expression can be used **only with a Functional Interface**.
+A lambda expression can be used only with a **Functional Interface**.
 
 A **Functional Interface** is an interface that has **exactly one abstract method** (Single Abstract Method / SAM).
 

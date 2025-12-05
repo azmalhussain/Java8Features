@@ -7,9 +7,7 @@ A **method reference** is a shorthand for a lambda expression that **calls an ex
 **Instead of writing:**
 
 ```java
-str ->System.out.
-
-println(str)
+str -> System.out.println(str)
 ```
 
 **You can write:**
