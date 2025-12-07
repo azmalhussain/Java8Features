@@ -79,7 +79,7 @@ sorted()
 distinct()
 limit()
 skip()
-flatMap()
+flatMap() : converts each element into a stream and then merges all those streams into a single stream.
 
 (All lazy: they don’t run immediately.)
 ```
