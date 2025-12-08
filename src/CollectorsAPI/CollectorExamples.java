@@ -88,11 +88,21 @@ public class CollectorExamples {
         System.out.println("Average Marks: " + averageMarks);
 
         // 8. groupingBy()
+        // Example 1: Students Grouped by Department
         Map<String, List<Student>> groupByDept = students.stream()
                 .collect(Collectors.groupingBy(Student::getDepartment));
         System.out.println("Students Grouped by Department: " + groupByDept);
 
-        // 9. mapping() inside groupingBy()
+        // Example 2: Count students per department
+        Map<String, Long> countByDept =
+                students.stream()
+                        .collect(Collectors.groupingBy(
+                                Student::getDepartment,
+                                Collectors.counting()
+                        ));
+        System.out.println("Count students per department: " + countByDept);
+
+        // Example 3: Names list per department using mapping()
         Map<String, List<String>> deptToNames = students.stream()
                 .collect(
                         Collectors.groupingBy(
@@ -100,14 +110,24 @@ public class CollectorExamples {
                                 Collectors.mapping(Student::getName, Collectors.toList())
                         )
                 );
-        System.out.println("Department -> Names List: " + deptToNames);
+        System.out.println("Names list per department: " + deptToNames);
 
-        // 10. partitioningBy() → Marks >= 80
+        // Example 4: TreeMap to sort keys (departments)
+        Map<String, List<Student>> sortedDept =
+                students.stream()
+                        .collect(Collectors.groupingBy(
+                                Student::getDepartment,
+                                TreeMap::new,            // custom Map supplier
+                                Collectors.toList()      // downstream collector
+                        ));
+        System.out.println("Sorted departments: " + sortedDept);
+
+        // 9. partitioningBy() → Marks >= 80
         Map<Boolean, List<Student>> partition = students.stream()
                 .collect(Collectors.partitioningBy(s -> s.getMarks() >= 80));
         System.out.println("Partition: Marks >= 80 : " + partition);
 
-        // 11. summarizingInt()
+        // 10. summarizingInt()
         IntSummaryStatistics stats = students.stream()
                 .collect(Collectors.summarizingInt(Student::getMarks));
         System.out.println("Marks Summary: " + stats);

@@ -79,6 +79,7 @@ sorted()
 distinct()
 limit()
 skip()
+peek() : To print each element in Stream (takes a Consumer)
 flatMap() : converts each element into a stream and then merges all those streams into a single stream.
 
 (All lazy: they don’t run immediately.)
@@ -97,6 +98,7 @@ min()
 max()
 toList()
 toSet()
+toArray()
 
 anyMatch()
 allMatch()

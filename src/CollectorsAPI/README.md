@@ -1,4 +1,4 @@
-# Collectors in Stream API (Terminal Operation)
+# Collectors in Stream API (Terminal Operation collect())
 
 ## 1. What are Collectors?
 
@@ -34,19 +34,21 @@ Set<String> set = names.stream().collect(Collectors.toSet());
 
 ### 2.3 Collectors.toMap()
 
-Creates a Map from the stream.
+Creates a Map from the stream. **Keys** should be unique.
 
 ```java
 Map<Integer, String> map = students.stream().collect(Collectors.toMap(Student::getId, Student::getName));
+```
 
-Method reference
-is used:
-For every 'Student'
-object in
-the stream,
-Student::getId ==>(student)->student.
+When duplicate keys present, we need to specify **mergeFunction**.
 
-getId()
+```java
+Map<String, Integer> nameToMarks = students.stream()
+        .collect(Collectors.toMap(
+                Student::getName,
+                Student::getMarks,
+                (oldVal, newVal) -> newVal      // keep latest OR any other operation
+        ));
 ```
 
 ### 2.4 Collectors.joining()
@@ -77,22 +79,38 @@ int sum = numbers.stream().collect(Collectors.summingInt(n -> n));
 
 Groups the data based on a key — one of the most powerful collectors.
 
-```java
+#### 2.7.1  groupingBy(keyExtractor)
+
+```    
 Map<String, List<Student>> group = students.stream()
         .collect(Collectors.groupingBy(Student::getDepartment));
+        
+
+Output: Department-wise students list
 ```
 
-### 2.7.1 Collectors.mapping()
+#### 2.7.2  groupingBy(keyExtractor, downstream collector)
 
-Collectors.mapping() is used inside another collector (like groupingBy, toSet, etc.)
+```    
+Map<String, Long> countByDept =
+        students.stream()
+                .collect(Collectors.groupingBy(
+                        Student::getDepartment,
+                        Collectors.counting()
+                ));
+        
 
-Its job is:
+Output: Department-wise Count Students 
+```
 
-```Convert each element into something else, then collect them using another collector (like toList, toSet, averagingDouble, etc.)```
+**Collectors.mapping()** basically extracts or transforms something from each element, inside another collector like
+groupingBy, partitioningBy, toSet, etc.
 
-Think of it as a pre-processing step before the final collection.
+```
+Collectors.mapping(mapperFunction, downstreamCollector)
+```
 
-```java
+```
 Map<String, List<String>> deptToNames = students.stream()
         .collect(
                 Collectors.groupingBy(
@@ -100,22 +118,27 @@ Map<String, List<String>> deptToNames = students.stream()
                         Collectors.mapping(Student::getName, Collectors.toList())
                 )
         );
+
+
+Output: 
+- List of names per department (mapping())
+- Inside each group, instead of collecting whole Student objects 'mapping()' extracts only the names
+- And finally makes a list of names for each department
 ```
 
-**✔ What happens here?**
+#### 2.7.3  groupingBy(keyExtractor, Supplier<Map>, downstream)
 
+```java
+Map<String, List<Student>> sortedDept =
+        students.stream()
+                .collect(Collectors.groupingBy(
+                        Student::getDepartment,
+                        TreeMap::new,
+                        Collectors.toList()
+                ));
 ```
-First we group students by department
-Inside each group, instead of collecting whole Student objects
-'mapping()' extracts only the names
-And finally makes a list of names for each department
-```
 
-Without mapping()~~,~~ groupingBy would give:
-```Map<String, List<Student>>```
-
-With mapping(), we get:
-```Map<String, List<String>>```
+Output: Keys department-wise sorted.
 
 ### 2.8 Collectors.partitioningBy()
 
@@ -150,4 +173,29 @@ System.out.println(stats.getCount());   // total number of students
 System.out.println(stats.getSum());     // total marks
 System.out.println(stats.getMin());     // lowest marks
 System.out.println(stats.getMax());     // highest marks
-System.out.println(stats.getAverage()); // avg marks```
+System.out.println(stats.getAverage()); // avg marks
+```
+
+### 2.10 Collectors.toCollection()
+
+It allows you to specify the type of 'collection' you want to collect the stream elements into:
+
+```
+- ArrayList 
+- LinkedList
+- TreeSet 
+- HashSet
+
+Note:
+It cannot be used directly to collect into a 'Map', because Map is not a Collection - it is a separate interface.
+```
+
+Example:
+
+```java
+List<Integer> list = Stream.of(1, 2, 3, 4)
+        .collect(Collectors.toCollection(LinkedList::new));
+
+Queue<String> queue = Stream.of("a", "b", "c")
+        .collect(Collectors.toCollection(ArrayDeque::new));
+```

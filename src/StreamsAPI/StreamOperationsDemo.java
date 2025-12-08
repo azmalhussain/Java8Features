@@ -126,7 +126,7 @@ public class StreamOperationsDemo {
         System.out.println(namesJoined);
 
         System.out.println("\n=== Reduce: Total Salary ===");
-        Optional<Double> totalSalary = employees.stream()
+        Optional<Integer> totalSalary = employees.stream()
                 .map(Employee::getSalary)
                 .reduce((a, b) -> a + b);
         totalSalary.ifPresent(System.out::println);
@@ -138,6 +138,8 @@ public class StreamOperationsDemo {
         Optional<Employee> min = employees.stream().min(Comparator.comparingInt(Employee::getSalary));
         min.ifPresent(System.out::println);
 
+        // NOTE: If comparator is descending → max() returns smallest value (since comparison basis is reversed)
+        System.out.println("max: " + Stream.of(44, 2, 69).max((o1, o2) -> o2 - o1));
 
         System.out.println("\n=== FindFirst: First IT Employee ===");
         employees.stream()
